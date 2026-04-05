@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automation Developer Portfolio</title>
-    <meta name="description" content="Interactive Make.com inspired portfolio for an Automation Developer.">
+    <title>Mohamed Sahfas — Automation Developer Portfolio</title>
+    <meta name="description" content="Interactive Make.com inspired portfolio for Mohamed Sahfas, Platform Automation Engineer specializing in workflow automation, web development, and system integration.">
+    <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Hero Intro Overlay -->
+    <div class="hero-overlay" id="heroOverlay">
+        <div class="hero-name" id="heroName">Mohamed Sahfas</div>
+        <div class="hero-subtitle">Platform Automation Engineer · Full Stack Developer</div>
+        <button class="hero-cta" id="heroCta">Explore My Work →</button>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
@@ -48,8 +56,9 @@
                     </div>
                 </div>
                 <div class="topbar-right">
-                    <button class="btn btn-secondary" onclick="document.getElementById('aboutModal').style.display='flex'">About Me</button>
-                    <button class="btn btn-primary" onclick="document.getElementById('contactModal').style.display='flex'">Contact</button>
+                    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+                    <button class="btn btn-secondary" id="aboutBtn">About Me</button>
+                    <button class="btn btn-primary" id="contactBtn">Contact</button>
                 </div>
             </header>
 
@@ -61,6 +70,12 @@
                     <!-- SVG layer for connections -->
                     <svg class="connections-layer" id="connectionsLayer"></svg>
                     <!-- Nodes will be injected here via JS -->
+                </div>
+                
+                <!-- Mini-Map -->
+                <div class="minimap" id="minimap">
+                    <canvas id="minimapCanvas"></canvas>
+                    <div class="minimap-viewport" id="minimapViewport"></div>
                 </div>
                 
                 <!-- Zoom Controls -->
@@ -95,7 +110,7 @@
     </div>
 
     <!-- About Me Modal -->
-    <div id="aboutModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+    <div id="aboutModal" class="modal-overlay" onclick="if(event.target===this)closeModal('aboutModal')">
         <div class="modal-content about-modal-wide">
             <div class="modal-header">
                 <div class="about-modal-title">
@@ -105,7 +120,7 @@
                         <p class="about-headline">Platform Automation Engineer @ Codification</p>
                     </div>
                 </div>
-                <button class="close-btn" onclick="document.getElementById('aboutModal').style.display='none'">&times;</button>
+                <button class="close-btn" onclick="closeModal('aboutModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="about-info-grid">
@@ -133,7 +148,7 @@
     </div>
 
     <!-- Contact Modal -->
-    <div id="contactModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+    <div id="contactModal" class="modal-overlay" onclick="if(event.target===this)closeModal('contactModal')">
         <div class="modal-content about-modal-wide">
             <div class="modal-header">
                 <div class="about-modal-title">
@@ -143,7 +158,7 @@
                         <p class="about-headline">Available for new opportunities</p>
                     </div>
                 </div>
-                <button class="close-btn" onclick="document.getElementById('contactModal').style.display='none'">&times;</button>
+                <button class="close-btn" onclick="closeModal('contactModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="contact-cards">
