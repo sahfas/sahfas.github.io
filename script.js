@@ -6,27 +6,27 @@ const cvData = {
         title: "Core Skills & Tools",
         nodes: [
             {
-                id: 'automation', type: 'trigger', label: 'Automation Platforms', icon: 'https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_aa6efd42db2ea43bcae67a0bede58ca2/make.png', x: 200, y: 300, operations: 'Expert',
+                id: 'automation', type: 'trigger', label: 'Automation Platforms', icon: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/make.svg', x: 200, y: 300, operations: 'Expert',
                 tooltip: 'Cross-platform workflow automation specialist',
                 details: '<h2>Workflow Automation</h2><p>Extensive experience cross-connecting platforms, designing resilient architectures, and managing mass data flows.</p><ul><li>Make.com</li><li>Zapier</li><li>n8n</li><li>Activepieces</li><li>Workato</li><li>Boostspace</li></ul>'
             },
             {
-                id: 'backend', type: 'action', label: 'Backend Dev', icon: 'https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg', x: 450, y: 150, operations: 'PHP/C#',
+                id: 'backend', type: 'action', label: 'Backend Dev', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', x: 450, y: 150, operations: 'PHP/C#',
                 tooltip: 'PHP, Laravel, ASP.NET MVC, REST APIs',
                 details: '<h2>Backend Engineering</h2><p>Designing robust server-side applications and microservices.</p><ul><li>PHP & Laravel</li><li>ASP.NET MVC & C#</li><li>REST API integrations</li><li>Scripting (Python, Selenium)</li></ul>'
             },
             {
-                id: 'frontend', type: 'action', label: 'Frontend Dev', icon: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg', x: 450, y: 450, operations: 'JS',
+                id: 'frontend', type: 'action', label: 'Frontend Dev', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', x: 450, y: 450, operations: 'JS',
                 tooltip: 'JavaScript, jQuery, Angular, Bootstrap',
                 details: '<h2>Frontend Interfaces</h2><p>Building responsive and interactive web applications.</p><ul><li>JavaScript / jQuery / AJAX</li><li>HTML5 / CSS3 / Bootstrap</li><li>DataTables integration</li><li>AngularJS</li></ul>'
             },
             {
-                id: 'database', type: 'action', label: 'Databases', icon: 'https://cdn-icons-png.flaticon.com/512/2885/2885412.png', x: 700, y: 300, operations: 'SQL',
+                id: 'database', type: 'action', label: 'Databases', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', x: 700, y: 300, operations: 'SQL',
                 tooltip: 'MySQL, SQL Server, schema design',
                 details: '<h2>Data Management</h2><p>Designing schemas and ensuring data integrity across high-volume systems.</p><ul><li>MySQL / phpMyAdmin</li><li>SQL Server</li><li>Architecture mapping</li></ul>'
             },
             {
-                id: 'devops', type: 'action', label: 'DevOps & Tools', icon: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg', x: 950, y: 300, operations: 'AWS/Git',
+                id: 'devops', type: 'action', label: 'DevOps & Tools', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg', x: 950, y: 300, operations: 'AWS/Git',
                 tooltip: 'AWS, Git/GitHub, Odoo Enterprise',
                 details: '<h2>Infrastructure & VCS</h2><p>Deploying code safely and managing team repositories.</p><ul><li>Amazon Web Services (AWS)</li><li>Git / GitHub / CodeCommit</li><li>Odoo Enterprise Resources</li></ul>'
             }
@@ -43,17 +43,17 @@ const cvData = {
         title: "Work Experience",
         nodes: [
             {
-                id: 'job1', type: 'trigger', label: 'Automation Engineer', icon: 'https://cdn-icons-png.flaticon.com/512/3065/3065886.png', x: 100, y: 200, operations: 'Current',
+                id: 'job1', type: 'trigger', label: 'Automation Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', x: 100, y: 200, operations: 'Current',
                 tooltip: 'Codification (UAE) — July 2025+',
                 details: '<h2>Codification (UAE)</h2><p>July 2025 - Present</p><ul><li>Platform automations with Odoo, Slack, Make.com, Google Workspace and other tools.</li><li>Automations with python, php, and selenium.</li><li>Automations maintenance and monitoring.</li></ul>'
             },
             {
-                id: 'job2', type: 'action', label: 'Software Engineer', icon: 'https://cdn-icons-png.flaticon.com/512/1218/1218274.png', x: 400, y: 300, operations: '2024-25',
+                id: 'job2', type: 'action', label: 'Software Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dot-net/dot-net-original.svg', x: 400, y: 300, operations: '2024-25',
                 tooltip: 'The Saltware (PVT) LTD — Sri Lanka',
                 details: '<h2>The Saltware (PVT) LTD (Sri Lanka)</h2><p>Sept 2024 - July 2025</p><ul><li>Software/web-applications programming</li><li>Bug fixing on web based ERP application</li><li>ASP.NET MVC, C#, JavaScript</li></ul>'
             },
             {
-                id: 'job3', type: 'action', label: 'Software Engineer', icon: 'https://cdn-icons-png.flaticon.com/512/912/912214.png', x: 700, y: 200, operations: '2022-24',
+                id: 'job3', type: 'action', label: 'Software Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/selenium/selenium-original.svg', x: 700, y: 200, operations: '2022-24',
                 tooltip: 'Imara Software Solutions — Sri Lanka',
                 details: '<h2>Imara Software Solutions (Sri Lanka)</h2><p>Aug 2022 - Aug 2024</p><ul><li>Built automation tools with selenium</li><li>Worked with all automation tools like make.com, zapier, activepieces, boostspace, n8n, workato</li><li>Software/web-applications programming</li></ul>'
             }
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let iconHtml;
             if (node.icon) {
-                iconHtml = `<div class="node-icon" style="background-image:url('${node.icon}')"></div>`;
+                iconHtml = `<div class="node-icon"><img src="${node.icon}" alt="${node.label}" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"></div>`;
             } else {
                 const initials = node.label.split(' ').map(w => w[0]).join('').substring(0, 2);
                 iconHtml = `<div class="node-icon" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-recommendations),var(--color-primary));border-radius:50%;color:#fff;font-weight:700;font-size:14px;">${initials}</div>`;
