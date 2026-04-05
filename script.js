@@ -398,7 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
             activeNode.data.y = (e.clientY - startY) / scale;
             activeNode.element.style.left = `${activeNode.data.x}px`;
             activeNode.element.style.top = `${activeNode.data.y}px`;
-            drawConnections(cvData[currentSection].nodes, cvData[currentSection].connections);
+            // Update paths in-place (no destroy/recreate) so particles stay synced
+            updateConnectionPaths(cvData[currentSection].nodes, cvData[currentSection].connections);
+            updateMinimap();
         }
     });
 
@@ -484,21 +486,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ---- Connections ----
+    function getPathD(s, e) {
+        const sx = s.x + 32, sy = s.y + 32, ex = e.x + 32, ey = e.y + 32;
+        const mx = sx + (ex - sx) / 2;
+        return `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ey}, ${ex} ${ey}`;
+    }
+
     function drawConnections(nodes, connections) {
         svgLayer.innerHTML = '';
         connections.forEach((conn, i) => {
             const s = nodes.find(n => n.id === conn.start);
             const e = nodes.find(n => n.id === conn.end);
             if (!s || !e) return;
-            const sx = s.x + 32, sy = s.y + 32, ex = e.x + 32, ey = e.y + 32;
-            const mx = sx + (ex - sx) / 2;
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("d", `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ey}, ${ex} ${ey}`);
+            path.setAttribute("d", getPathD(s, e));
             path.setAttribute("class", "connection-path");
             path.setAttribute("data-start", conn.start);
             path.setAttribute("data-end", conn.end);
             path.style.animationDelay = `${i * 0.15}s, ${i * 0.15}s`;
             svgLayer.appendChild(path);
+        });
+    }
+
+    // Update existing path positions without destroying/recreating (used during drag)
+    function updateConnectionPaths(nodes, connections) {
+        const paths = svgLayer.querySelectorAll('.connection-path');
+        connections.forEach((conn, i) => {
+            const s = nodes.find(n => n.id === conn.start);
+            const e = nodes.find(n => n.id === conn.end);
+            if (!s || !e || !paths[i]) return;
+            paths[i].setAttribute("d", getPathD(s, e));
         });
     }
 
