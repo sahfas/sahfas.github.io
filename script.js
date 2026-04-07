@@ -216,6 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dashContactBtn').addEventListener('click', () => openModal('contactModal'));
 
     // ---- Dashboard Helpers ----
+    const heroVideoEl = document.getElementById('heroVideo');
+
     function showDashboard() {
         dashboardEl.classList.add('active');
         canvas.style.display = 'none';
@@ -223,11 +225,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pageTitle) pageTitle.textContent = 'Dashboard';
         history.replaceState(null, '', '#dashboard');
         animateStatCounters();
+        // Force-play hero video (browsers block autoplay inside display:none)
+        if (heroVideoEl) {
+            heroVideoEl.play().catch(() => {});
+        }
     }
 
     function hideDashboard() {
         dashboardEl.classList.remove('active');
         canvas.style.display = '';
+        // Pause video when not visible
+        if (heroVideoEl) heroVideoEl.pause();
     }
 
     function navigateToSection(sectionKey) {
@@ -857,9 +865,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==============================
     // Settings Panel Logic
     // ==============================
-    const SETTINGS_USER = 'sahfas';
-    const SETTINGS_PASS = 'admin123';
-    let settingsAuthed = false;
+    // Read from config.js (loaded before this script)
+    const SETTINGS_PASSWORD_ENABLED = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_PASSWORD_ENABLED !== undefined)
+        ? CONFIG.SETTINGS_PASSWORD_ENABLED
+        : true;
+    const SETTINGS_USER = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_USERNAME) || 'sahfas';
+    const SETTINGS_PASS = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_PASSWORD) || 'admin123';
+    // If password is disabled, auto-auth
+    let settingsAuthed = !SETTINGS_PASSWORD_ENABLED;
 
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsLoginEl = document.getElementById('settingsLogin');
@@ -929,8 +942,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open settings modal
     settingsBtn.addEventListener('click', () => {
-        // Reset to login view if not authed
-        if (!settingsAuthed) {
+        if (!settingsAuthed && SETTINGS_PASSWORD_ENABLED) {
+            // Show login view
             settingsLoginEl.style.display = '';
             settingsPanelEl.style.display = 'none';
             settingsSubtitle.textContent = 'Admin access required';
@@ -938,13 +951,18 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsUserInput.value = '';
             settingsPassInput.value = '';
         } else {
+            // Skip login — go straight to toggles
             settingsLoginEl.style.display = 'none';
             settingsPanelEl.style.display = '';
             settingsSubtitle.textContent = 'Manage portfolio features';
+            // Hide logout button when password is disabled (no login = no logout)
+            if (!SETTINGS_PASSWORD_ENABLED) {
+                settingsLogoutBtn.parentElement.style.display = 'none';
+            }
             applyFeatureFlags();
         }
         openModal('settingsModal');
-        if (!settingsAuthed) {
+        if (!settingsAuthed && SETTINGS_PASSWORD_ENABLED) {
             setTimeout(() => settingsUserInput.focus(), 300);
         }
     });
