@@ -152,7 +152,7 @@ const cvData = {
 // ==============================
 // State
 // ==============================
-let currentSection = 'skills';
+let currentSection = 'dashboard';
 let scale = 1;
 let translateX = 0;
 let translateY = 0;
@@ -162,6 +162,7 @@ let startY = 0;
 let activeNode = null;
 let isDraggingNode = false;
 let selectedNodeEl = null;
+let ghostDemoDone = {}; // track which sections have already shown the demo
 
 // ==============================
 // Global Modal Helpers
@@ -207,12 +208,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const minimapCanvas = document.getElementById('minimapCanvas');
     const minimapViewport = document.getElementById('minimapViewport');
 
+    const dashboardEl = document.getElementById('dashboard');
+
     // Modal buttons
     document.getElementById('aboutBtn').addEventListener('click', () => openModal('aboutModal'));
     document.getElementById('contactBtn').addEventListener('click', () => openModal('contactModal'));
+    document.getElementById('dashContactBtn').addEventListener('click', () => openModal('contactModal'));
+
+    // ---- Dashboard Helpers ----
+    function showDashboard() {
+        dashboardEl.classList.add('active');
+        canvas.style.display = 'none';
+        detailPanel.classList.remove('open');
+        if (pageTitle) pageTitle.textContent = 'Dashboard';
+        history.replaceState(null, '', '#dashboard');
+        animateStatCounters();
+    }
+
+    function hideDashboard() {
+        dashboardEl.classList.remove('active');
+        canvas.style.display = '';
+    }
+
+    function navigateToSection(sectionKey) {
+        if (sectionKey === 'dashboard') {
+            hideDashboard(); // reset first
+            navItems.forEach(n => n.classList.remove('active'));
+            const navTarget = document.querySelector('.nav-item[data-section="dashboard"]');
+            if (navTarget) navTarget.classList.add('active');
+            showDashboard();
+            return;
+        }
+        hideDashboard();
+        navItems.forEach(n => n.classList.remove('active'));
+        const navTarget = document.querySelector(`.nav-item[data-section="${sectionKey}"]`);
+        if (navTarget) navTarget.classList.add('active');
+        renderSection(sectionKey);
+        if (typeof featureFlags === 'undefined' || featureFlags.particles) startParticles();
+        // Trigger ghost demo cursor
+        setTimeout(() => { fitToScreen(); if (typeof featureFlags === 'undefined' || featureFlags.ghostCursor) runGhostDemo(sectionKey); }, 60);
+    }
+
+    // Stat counter animation
+    function animateStatCounters() {
+        document.querySelectorAll('.dash-stat-number[data-count]').forEach(el => {
+            const target = parseInt(el.getAttribute('data-count'));
+            const duration = 1200;
+            const startTime = performance.now();
+            el.textContent = '0';
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(target * ease);
+                if (progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        });
+    }
+
+    // Dashboard card clicks (data-goto)
+    document.querySelectorAll('[data-goto]').forEach(el => {
+        el.addEventListener('click', () => {
+            const target = el.getAttribute('data-goto');
+            if (target && cvData[target]) navigateToSection(target);
+        });
+    });
 
     // ---- Hero Intro ----
-    if (sessionStorage.getItem('heroShown')) {
+    // Check feature flag from localStorage early (before featureFlags object is created)
+    const _heroFlagRaw = localStorage.getItem('portfolioFeatures');
+    const _heroEnabled = _heroFlagRaw ? (JSON.parse(_heroFlagRaw).heroIntro !== false) : true;
+    if (!_heroEnabled || sessionStorage.getItem('heroShown')) {
         heroOverlay.style.display = 'none';
     } else {
         function dismissHero() {
@@ -380,6 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Mouse Panning ----
     canvas.addEventListener('mousedown', (e) => {
+        cancelGhostDemo(); // Cancel demo if user interacts
         if (e.target.closest('.node-module,.detail-panel,.sidebar,.topbar,.minimap')) return;
         isPanning = true;
         startX = e.clientX - translateX;
@@ -526,6 +594,95 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ---- Ghost Demo Cursor ----
+    const ghostCursor = document.getElementById('ghostCursor');
+    const ghostRing = document.getElementById('ghostCursorRing');
+    let ghostAnimCancelId = null;
+
+    function cancelGhostDemo() {
+        if (ghostAnimCancelId) { clearTimeout(ghostAnimCancelId); ghostAnimCancelId = null; }
+        if (ghostCursor) { ghostCursor.classList.remove('visible', 'clicking'); }
+        if (ghostRing) { ghostRing.classList.remove('visible', 'click-burst'); }
+    }
+
+    function runGhostDemo(sectionKey) {
+        cancelGhostDemo();
+
+        const data = cvData[sectionKey];
+        if (!data || !data.nodes.length) return;
+
+        // Pick the first node as the demo target
+        const targetNode = data.nodes[0];
+        const targetEl = document.getElementById(`node-${targetNode.id}`);
+        if (!targetEl) return;
+
+        // Wait for fitToScreen + node enter animations to finish
+        ghostAnimCancelId = setTimeout(() => {
+            const nodeRect = targetEl.getBoundingClientRect();
+            const nodeCX = nodeRect.left + nodeRect.width / 2;
+            const nodeCY = nodeRect.top + nodeRect.height / 2;
+
+            // Start cursor from top-right area of canvas
+            const canvasRect = canvas.getBoundingClientRect();
+            const startCX = canvasRect.left + canvasRect.width * 0.75;
+            const startCY = canvasRect.top + 80;
+
+            // Position cursor at start
+            ghostCursor.style.left = `${startCX}px`;
+            ghostCursor.style.top = `${startCY}px`;
+            ghostCursor.classList.add('visible');
+
+            // Phase 1: Animate cursor to the node (smooth glide)
+            const moveDuration = 1200;
+            const moveStart = performance.now();
+
+            function animateMove(now) {
+                const elapsed = now - moveStart;
+                const t = Math.min(elapsed / moveDuration, 1);
+                // Smooth ease-in-out
+                const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+                // Re-read target position in case of layout shifts
+                const nr = targetEl.getBoundingClientRect();
+                const curTargetX = nr.left + nr.width / 2;
+                const curTargetY = nr.top + nr.height / 2;
+
+                const cx = startCX + (curTargetX - startCX) * ease;
+                const cy = startCY + (curTargetY - startCY) * ease;
+                ghostCursor.style.left = `${cx}px`;
+                ghostCursor.style.top = `${cy}px`;
+
+                if (t < 1) {
+                    ghostAnimCancelId = requestAnimationFrame(animateMove);
+                } else {
+                    // Phase 2: Show hover ring
+                    ghostRing.style.left = `${curTargetX}px`;
+                    ghostRing.style.top = `${curTargetY}px`;
+                    ghostRing.classList.add('visible');
+
+                    // Phase 3: Click after a pause
+                    ghostAnimCancelId = setTimeout(() => {
+                        // Click animation
+                        ghostCursor.classList.add('clicking');
+                        ghostRing.classList.remove('visible');
+                        ghostRing.classList.add('click-burst');
+
+                        // Trigger the actual node click
+                        targetEl.click();
+
+                        // Phase 4: Fade out cursor
+                        ghostAnimCancelId = setTimeout(() => {
+                            ghostCursor.classList.remove('clicking');
+                            ghostCursor.classList.remove('visible');
+                            ghostRing.classList.remove('click-burst');
+                        }, 600);
+                    }, 500);
+                }
+            }
+            requestAnimationFrame(animateMove);
+        }, 1200); // Delay to let fitToScreen + node animations complete
+    }
+
     // ---- Particle Animation ----
     const particleCanvasEl = document.createElement('canvas');
     particleCanvasEl.id = 'particleCanvas';
@@ -645,10 +802,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Navigation ----
     navItems.forEach(item => {
         item.addEventListener('click', () => {
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
             const s = item.getAttribute('data-section');
-            if (s && cvData[s]) { renderSection(s); startParticles(); }
+            if (s) navigateToSection(s);
         });
     });
 
@@ -673,6 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             closeModal('aboutModal');
             closeModal('contactModal');
+            closeModal('settingsModal');
             if (detailPanel.classList.contains('open')) closePanelBtn.click();
         }
         const step = 50;
@@ -681,14 +837,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'ArrowUp') { translateY += step; updateTransform(); }
         if (e.key === 'ArrowDown') { translateY -= step; updateTransform(); }
 
-        const sections = ['skills', 'experience', 'projects', 'education', 'recommendations'];
-        const idx = ['1', '2', '3', '4', '5'].indexOf(e.key);
+        const sections = ['dashboard', 'skills', 'experience', 'projects', 'education', 'recommendations'];
+        const idx = ['1', '2', '3', '4', '5', '6'].indexOf(e.key);
         if (idx !== -1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
             if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-                navItems.forEach(n => n.classList.remove('active'));
-                navItems[idx].classList.add('active');
-                renderSection(sections[idx]);
-                startParticles();
+                navigateToSection(sections[idx]);
             }
         }
     });
@@ -696,25 +849,207 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- URL Hash Routing ----
     window.addEventListener('hashchange', () => {
         const h = location.hash.replace('#', '');
-        if (h && cvData[h]) {
-            navItems.forEach(n => n.classList.remove('active'));
-            const t = document.querySelector(`.nav-item[data-section="${h}"]`);
-            if (t) t.classList.add('active');
-            renderSection(h);
-            startParticles();
+        if (h === 'dashboard' || (h && cvData[h])) {
+            navigateToSection(h);
         }
     });
+
+    // ==============================
+    // Settings Panel Logic
+    // ==============================
+    const SETTINGS_USER = 'sahfas';
+    const SETTINGS_PASS = 'admin123';
+    let settingsAuthed = false;
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsLoginEl = document.getElementById('settingsLogin');
+    const settingsPanelEl = document.getElementById('settingsPanel');
+    const settingsUserInput = document.getElementById('settingsUser');
+    const settingsPassInput = document.getElementById('settingsPass');
+    const settingsError = document.getElementById('settingsError');
+    const settingsLoginBtn = document.getElementById('settingsLoginBtn');
+    const settingsLogoutBtn = document.getElementById('settingsLogoutBtn');
+    const settingsSubtitle = document.getElementById('settingsSubtitle');
+
+    // Toggle elements
+    const toggleGhostCursor = document.getElementById('toggleGhostCursor');
+    const toggleHeroIntro = document.getElementById('toggleHeroIntro');
+    const toggleParticles = document.getElementById('toggleParticles');
+    const toggleTooltips = document.getElementById('toggleTooltips');
+
+    // Feature flags (defaults: all ON)
+    const featureDefaults = { ghostCursor: true, heroIntro: true, particles: true, tooltips: true };
+
+    function loadFeatureFlags() {
+        const saved = localStorage.getItem('portfolioFeatures');
+        if (saved) {
+            try { return { ...featureDefaults, ...JSON.parse(saved) }; }
+            catch (e) { return { ...featureDefaults }; }
+        }
+        return { ...featureDefaults };
+    }
+
+    function saveFeatureFlags(flags) {
+        localStorage.setItem('portfolioFeatures', JSON.stringify(flags));
+    }
+
+    let featureFlags = loadFeatureFlags();
+
+    // Apply feature flags to UI state
+    function applyFeatureFlags() {
+        // Ghost Cursor
+        toggleGhostCursor.checked = featureFlags.ghostCursor;
+        // Hero Intro
+        toggleHeroIntro.checked = featureFlags.heroIntro;
+        // Particles
+        toggleParticles.checked = featureFlags.particles;
+        // Tooltips
+        toggleTooltips.checked = featureFlags.tooltips;
+
+        // Apply tooltips immediately
+        if (!featureFlags.tooltips) {
+            document.body.classList.add('tooltips-disabled');
+        } else {
+            document.body.classList.remove('tooltips-disabled');
+        }
+
+        // Apply particles immediately
+        if (!featureFlags.particles && animFrameId) {
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
+            pCtx.clearRect(0, 0, particleCanvasEl.width, particleCanvasEl.height);
+            particles = [];
+        }
+
+        // Apply hero intro: if disabled, never show it
+        if (!featureFlags.heroIntro) {
+            heroOverlay.style.display = 'none';
+        }
+    }
+
+    // Open settings modal
+    settingsBtn.addEventListener('click', () => {
+        // Reset to login view if not authed
+        if (!settingsAuthed) {
+            settingsLoginEl.style.display = '';
+            settingsPanelEl.style.display = 'none';
+            settingsSubtitle.textContent = 'Admin access required';
+            settingsError.textContent = '';
+            settingsUserInput.value = '';
+            settingsPassInput.value = '';
+        } else {
+            settingsLoginEl.style.display = 'none';
+            settingsPanelEl.style.display = '';
+            settingsSubtitle.textContent = 'Manage portfolio features';
+            applyFeatureFlags();
+        }
+        openModal('settingsModal');
+        if (!settingsAuthed) {
+            setTimeout(() => settingsUserInput.focus(), 300);
+        }
+    });
+
+    // Login handler
+    function handleSettingsLogin() {
+        const user = settingsUserInput.value.trim();
+        const pass = settingsPassInput.value;
+        if (user === SETTINGS_USER && pass === SETTINGS_PASS) {
+            settingsAuthed = true;
+            settingsError.textContent = '';
+            settingsLoginEl.style.display = 'none';
+            settingsPanelEl.style.display = '';
+            settingsSubtitle.textContent = 'Manage portfolio features';
+            applyFeatureFlags();
+        } else {
+            settingsError.textContent = '⚠ Invalid credentials. Try again.';
+            settingsPassInput.value = '';
+            settingsPassInput.focus();
+        }
+    }
+
+    settingsLoginBtn.addEventListener('click', handleSettingsLogin);
+    settingsPassInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleSettingsLogin();
+    });
+    settingsUserInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') settingsPassInput.focus();
+    });
+
+    // Logout handler
+    settingsLogoutBtn.addEventListener('click', () => {
+        settingsAuthed = false;
+        settingsLoginEl.style.display = '';
+        settingsPanelEl.style.display = 'none';
+        settingsSubtitle.textContent = 'Admin access required';
+        settingsUserInput.value = '';
+        settingsPassInput.value = '';
+        settingsError.textContent = '';
+        setTimeout(() => settingsUserInput.focus(), 100);
+    });
+
+    // Toggle change handlers
+    toggleGhostCursor.addEventListener('change', () => {
+        featureFlags.ghostCursor = toggleGhostCursor.checked;
+        saveFeatureFlags(featureFlags);
+        if (!featureFlags.ghostCursor) {
+            cancelGhostDemo();
+        }
+    });
+
+    toggleHeroIntro.addEventListener('change', () => {
+        featureFlags.heroIntro = toggleHeroIntro.checked;
+        saveFeatureFlags(featureFlags);
+        if (!featureFlags.heroIntro) {
+            // Immediately hide hero if it's currently showing
+            heroOverlay.style.display = 'none';
+            // Also clear the session flag so toggling back ON will re-show it next visit
+            sessionStorage.removeItem('heroShown');
+        } else {
+            // Clear the session flag so it shows again on next page load
+            sessionStorage.removeItem('heroShown');
+        }
+    });
+
+    toggleParticles.addEventListener('change', () => {
+        featureFlags.particles = toggleParticles.checked;
+        saveFeatureFlags(featureFlags);
+        if (!featureFlags.particles) {
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+            pCtx.clearRect(0, 0, particleCanvasEl.width, particleCanvasEl.height);
+            particles = [];
+        } else {
+            // Re-enable particles for current section
+            if (currentSection !== 'dashboard') {
+                startParticles();
+            }
+        }
+    });
+
+    toggleTooltips.addEventListener('change', () => {
+        featureFlags.tooltips = toggleTooltips.checked;
+        saveFeatureFlags(featureFlags);
+        if (!featureFlags.tooltips) {
+            document.body.classList.add('tooltips-disabled');
+        } else {
+            document.body.classList.remove('tooltips-disabled');
+        }
+    });
+
+    // Apply initial feature flags on page load
+    applyFeatureFlags();
 
     // ---- Initial Render ----
     const hash = location.hash.replace('#', '');
     if (hash && cvData[hash]) {
-        navItems.forEach(n => n.classList.remove('active'));
-        const t = document.querySelector(`.nav-item[data-section="${hash}"]`);
-        if (t) t.classList.add('active');
-        renderSection(hash);
+        navigateToSection(hash);
+    } else if (hash === 'dashboard' || !hash) {
+        showDashboard();
     } else {
-        renderSection(currentSection);
+        showDashboard();
     }
 
-    setTimeout(() => { fitToScreen(); startParticles(); }, 50);
+    setTimeout(() => { if (currentSection !== 'dashboard') { fitToScreen(); if (featureFlags.particles) startParticles(); } }, 50);
 });
