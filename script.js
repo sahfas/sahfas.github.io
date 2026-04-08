@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const heroVideoEl = document.getElementById('heroVideo');
 
     function showDashboard() {
+        cancelGhostDemo();
         dashboardEl.classList.add('active');
         canvas.style.display = 'none';
         detailPanel.classList.remove('open');
@@ -229,6 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function navigateToSection(sectionKey) {
+        cancelGhostDemo();
         if (sectionKey === 'dashboard') {
             hideDashboard();
             navItems.forEach(n => n.classList.remove('active'));
