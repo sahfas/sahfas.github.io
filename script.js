@@ -1,153 +1,137 @@
 // ==============================
-// CV Data Model
+// CV Data Model — loaded from data.json
 // ==============================
-const cvData = {
-    skills: {
-        title: "Core Skills & Tools",
-        nodes: [
-            {
-                id: 'automation', type: 'trigger', label: 'Automation Platforms', icon: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/make.svg', x: 200, y: 300, operations: 'Expert',
-                tooltip: 'Cross-platform workflow automation specialist',
-                details: '<h2>Workflow Automation</h2><p>Extensive experience cross-connecting platforms, designing resilient architectures, and managing mass data flows.</p><ul><li>Make.com</li><li>Zapier</li><li>n8n</li><li>Activepieces</li><li>Workato</li><li>Boostspace</li></ul>'
-            },
-            {
-                id: 'backend', type: 'action', label: 'Backend Dev', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', x: 450, y: 150, operations: 'PHP/C#',
-                tooltip: 'PHP, Laravel, ASP.NET MVC, REST APIs',
-                details: '<h2>Backend Engineering</h2><p>Designing robust server-side applications and microservices.</p><ul><li>PHP & Laravel</li><li>ASP.NET MVC & C#</li><li>REST API integrations</li><li>Scripting (Python, Selenium)</li></ul>'
-            },
-            {
-                id: 'frontend', type: 'action', label: 'Frontend Dev', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', x: 450, y: 450, operations: 'JS',
-                tooltip: 'JavaScript, jQuery, Angular, Bootstrap',
-                details: '<h2>Frontend Interfaces</h2><p>Building responsive and interactive web applications.</p><ul><li>JavaScript / jQuery / AJAX</li><li>HTML5 / CSS3 / Bootstrap</li><li>DataTables integration</li><li>AngularJS</li></ul>'
-            },
-            {
-                id: 'database', type: 'action', label: 'Databases', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', x: 700, y: 300, operations: 'SQL',
-                tooltip: 'MySQL, SQL Server, schema design',
-                details: '<h2>Data Management</h2><p>Designing schemas and ensuring data integrity across high-volume systems.</p><ul><li>MySQL / phpMyAdmin</li><li>SQL Server</li><li>Architecture mapping</li></ul>'
-            },
-            {
-                id: 'devops', type: 'action', label: 'DevOps & Tools', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg', x: 950, y: 300, operations: 'AWS/Git',
-                tooltip: 'AWS, Git/GitHub, Odoo Enterprise',
-                details: '<h2>Infrastructure & VCS</h2><p>Deploying code safely and managing team repositories.</p><ul><li>Amazon Web Services (AWS)</li><li>Git / GitHub / CodeCommit</li><li>Odoo Enterprise Resources</li></ul>'
-            }
-        ],
-        connections: [
-            { start: 'automation', end: 'backend' },
-            { start: 'automation', end: 'frontend' },
-            { start: 'backend', end: 'database' },
-            { start: 'frontend', end: 'database' },
-            { start: 'database', end: 'devops' }
-        ]
-    },
-    experience: {
-        title: "Work Experience",
-        nodes: [
-            {
-                id: 'job1', type: 'trigger', label: 'Automation Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', x: 100, y: 200, operations: 'Current',
-                tooltip: 'Codification (UAE) — July 2025+',
-                details: '<h2>Codification (UAE)</h2><p>July 2025 - Present</p><ul><li>Platform automations with Odoo, Slack, Make.com, Google Workspace and other tools.</li><li>Automations with python, php, and selenium.</li><li>Automations maintenance and monitoring.</li></ul>'
-            },
-            {
-                id: 'job2', type: 'action', label: 'Software Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dot-net/dot-net-original.svg', x: 400, y: 300, operations: '2024-25',
-                tooltip: 'The Saltware (PVT) LTD — Sri Lanka',
-                details: '<h2>The Saltware (PVT) LTD (Sri Lanka)</h2><p>Sept 2024 - July 2025</p><ul><li>Software/web-applications programming</li><li>Bug fixing on web based ERP application</li><li>ASP.NET MVC, C#, JavaScript</li></ul>'
-            },
-            {
-                id: 'job3', type: 'action', label: 'Software Engineer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/selenium/selenium-original.svg', x: 700, y: 200, operations: '2022-24',
-                tooltip: 'Imara Software Solutions — Sri Lanka',
-                details: '<h2>Imara Software Solutions (Sri Lanka)</h2><p>Aug 2022 - Aug 2024</p><ul><li>Built automation tools with selenium</li><li>Worked with all automation tools like make.com, zapier, activepieces, boostspace, n8n, workato</li><li>Software/web-applications programming</li></ul>'
-            }
-        ],
-        connections: [
-            { start: 'job3', end: 'job2' },
-            { start: 'job2', end: 'job1' }
-        ]
-    },
-    projects: {
-        title: "Major Projects",
-        nodes: [
-            {
-                id: 'proj1', type: 'trigger', label: 'AppraiserPal', icon: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', x: 200, y: 150, operations: '2023',
-                tooltip: 'Property appraisal web app — Angular + Laravel',
-                details: '<h2>AppraiserPal</h2><p>Web application revolutionizing the property appraisal process with tracking and chat.</p><ul><li>AngularJS, Laravel, MySQL</li><li>AWS EC2 Integration</li></ul>'
-            },
-            {
-                id: 'proj2', type: 'action', label: 'ShopSync Pro', icon: 'https://cdn-icons-png.flaticon.com/512/2933/2933116.png', x: 450, y: 300, operations: '2023',
-                tooltip: '3000+ product migration via REST APIs',
-                details: '<h2>ShopSync Pro</h2><p>Effortlessly migrated a vast inventory of over 3000 products from Rock Safety to Unas.</p><ul><li>PHP Scripts & REST APIs</li><li>JSON/XML transformations</li></ul>'
-            },
-            {
-                id: 'proj3', type: 'action', label: 'StudentConnectX', icon: 'https://cdn-icons-png.flaticon.com/512/1256/1256650.png', x: 200, y: 450, operations: '2023',
-                tooltip: 'PHPBB forum upgrade 2.0 → 3.3',
-                details: '<h2>StudentConnectX</h2><p>Upgraded an existing student forum site from PHPBB 2.0 to PHPBB 3.3.</p><ul><li>MySQL, PhpMyAdmin</li><li>Enhanced search indexing</li></ul>'
-            },
-            {
-                id: 'proj4', type: 'action', label: 'Workflow Automations', icon: 'https://cdn-icons-png.flaticon.com/512/2083/2083213.png', x: 700, y: 150, operations: '2024',
-                tooltip: 'Make.com + Zapier multi-platform flows',
-                details: '<h2>Make.com & Zapier Workflows</h2><p>Comprehensive automation project for workflow efficiency.</p><ul><li>WP Recipe plugin & data migration</li><li>Auth.net + Salesforce + QuickBooks sync</li><li>AI NLP integration</li></ul>'
-            },
-            {
-                id: 'proj5', type: 'action', label: 'Trove & ITS ERP', icon: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg', x: 700, y: 450, operations: 'Current',
-                tooltip: 'Laravel + ASP.NET ERP + Zoho CRM',
-                details: '<h2>Trove (Laravel) & ITS ERP (ASP.NET)</h2><p>Current complex systems development involving Zoho CRM integration and ERP system optimization.</p><ul><li>Zoho CRM API</li><li>Web Scraping</li><li>DataTables & Financial dashboards</li></ul>'
-            }
-        ],
-        connections: [
-            { start: 'proj1', end: 'proj2' },
-            { start: 'proj3', end: 'proj2' },
-            { start: 'proj2', end: 'proj4' },
-            { start: 'proj2', end: 'proj5' }
-        ]
-    },
-    education: {
-        title: "Education & Certifications",
-        nodes: [
-            {
-                id: 'edu1', type: 'trigger', label: 'Foundation in IT', icon: 'https://cdn-icons-png.flaticon.com/512/2231/2231662.png', x: 200, y: 250, operations: '2016',
-                tooltip: 'UCSC — Maths, English, ICT',
-                details: '<h2>Foundation in Information Technology</h2><p>University of Colombo School of Computing (UCSC)</p><ul><li>Mathematics</li><li>English Communication Skills</li><li>Information Communication Technology</li></ul>'
-            },
-            {
-                id: 'edu2', type: 'action', label: 'B.I.T', icon: 'https://cdn-icons-png.flaticon.com/512/2231/2231662.png', x: 600, y: 250, operations: '2017-21',
-                tooltip: 'Bachelor of IT — UCSC',
-                details: '<h2>Bachelor of Information Technology</h2><p>University of Colombo School of Computing (UCSC)</p><ul><li>Software and applications development</li><li>Database and network design</li></ul>'
-            }
-        ],
-        connections: [
-            { start: 'edu1', end: 'edu2' }
-        ]
-    },
-    recommendations: {
-        title: "LinkedIn Recommendations",
-        nodes: [
-            {
-                id: 'rec_source', type: 'trigger', label: 'LinkedIn', icon: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png', x: 400, y: 100, operations: '3',
-                tooltip: 'View recommendations from colleagues',
-                details: '<h2>LinkedIn Profile</h2><p>Platform Automation Engineer @ Codification</p><p>Puttalam District, Sri Lanka</p><ul><li><a href="https://www.linkedin.com/in/sahfas/" target="_blank" style="color:var(--color-primary);">View Full Profile →</a></li></ul>'
-            },
-            {
-                id: 'rec1', type: 'action', label: 'Ishthiyaque Ahmed', icon: '', x: 100, y: 300, operations: 'Sep 2025',
-                tooltip: 'Software Engineer & Automation Strategist',
-                details: '<div class="rec-card"><div class="rec-avatar">IA</div><h2>Ishthiyaque Ahmed (Ishthi)</h2><p class="rec-title">Software Engineer &amp; Automation Strategist | Make, N8N &amp; AI</p><blockquote class="rec-quote">"Sahfas is a talented resource to any employer. During his tenure of career, I found him dynamic and fast learner despite any technology. He is a person who can understand the underpinning technical framework of the working platform or project. I wish him all the best."</blockquote><span class="rec-date">September 30, 2025</span></div>'
-            },
-            {
-                id: 'rec2', type: 'action', label: 'Mohamed Faalil', icon: '', x: 400, y: 350, operations: 'Jul 2025',
-                tooltip: 'Senior Software Engineer @ comAlpine',
-                details: '<div class="rec-card"><div class="rec-avatar">MF</div><h2>Mohamed Faalil</h2><p class="rec-title">Senior Software Engineer @ comAlpine Informationssysteme GmbH</p><blockquote class="rec-quote">"I had the pleasure of working with Sahfas when he joined as an Associate Software Engineer. From the very beginning, he demonstrated a fast learning ability and a deep understanding of technical concepts. Sahfas has developed extensive experience in automation, and his contributions in that area have been truly impressive. His ability to tackle complex problems and deliver reliable solutions makes him stand out as a developer. I highly recommend Sahfas to any organization."</blockquote><span class="rec-date">July 15, 2025</span></div>'
-            },
-            {
-                id: 'rec3', type: 'action', label: 'Rajabdeen Ajmal', icon: '', x: 700, y: 300, operations: 'May 2025',
-                tooltip: 'Senior Technical Lead | Java, Spring Boot',
-                details: '<div class="rec-card"><div class="rec-avatar">RA</div><h2>Rajabdeen Ajmal</h2><p class="rec-title">Senior Technical Lead | Java | Spring Boot | Laravel | Angular | Node.js</p><blockquote class="rec-quote">"It\'s been a pleasure working with Sahfas at Imara Software Solutions, and I\'ve also had the privilege of mentoring him earlier as one of my BIT students. From the classroom to the workplace, his intelligence, dedication, and strong grasp of software development have always stood out. Sahfas consistently demonstrated solid technical skills and a clear understanding of software architecture. I strongly recommend him for any opportunity in software development or beyond."</blockquote><span class="rec-date">May 1, 2025</span></div>'
-            }
-        ],
-        connections: [
-            { start: 'rec_source', end: 'rec1' },
-            { start: 'rec_source', end: 'rec2' },
-            { start: 'rec_source', end: 'rec3' }
-        ]
-    }
+let cvData = {};
+let portfolioData = {};
+
+// Section SVG icons (structural UI — not editable content)
+const SECTION_ICONS = {
+    skills: '<svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    experience: '<svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    projects: '<svg viewBox="0 0 24 24" fill="none" width="28" height="28"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M19 12h3M2 12h3M12 2v3M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    education: '<svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    recommendations: '<svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M21 15a4 4 0 01-4 4H7l-4 4V7a4 4 0 014-4h10a4 4 0 014 4v8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
+
+const SECTION_ACCENT_VARS = {
+    skills: '--accent-skills',
+    experience: '--accent-experience',
+    projects: '--accent-projects',
+    education: '--accent-education',
+    recommendations: '--accent-recommendations'
+};
+
+// ==============================
+// Data Loading & Population
+// ==============================
+async function loadPortfolioData() {
+    try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        portfolioData = data;
+        cvData = data.sections;
+        return data;
+    } catch (error) {
+        console.error('Failed to load portfolio data:', error);
+        return null;
+    }
+}
+
+function populateDashboard(data) {
+    // Hero overlay
+    const heroName = document.getElementById('heroName');
+    const heroSubtitle = document.getElementById('heroSubtitle');
+    if (heroName) heroName.textContent = data.profile.name;
+    if (heroSubtitle) heroSubtitle.textContent = data.profile.subtitle;
+
+    // Topbar
+    const orgName = document.getElementById('orgName');
+    if (orgName) orgName.textContent = data.profile.name;
+
+    // Dashboard hero
+    const dashHeroBadge = document.getElementById('dashHeroBadge');
+    const dashHeroTitle = document.getElementById('dashHeroTitle');
+    const dashHeroTagline = document.getElementById('dashHeroTagline');
+    if (dashHeroBadge) dashHeroBadge.textContent = data.profile.title;
+    if (dashHeroTitle) dashHeroTitle.textContent = data.profile.name;
+    if (dashHeroTagline) dashHeroTagline.textContent = data.profile.tagline;
+
+    // Stats
+    const dashStats = document.getElementById('dashStats');
+    if (dashStats) {
+        dashStats.innerHTML = data.stats.map(s => `
+            <div class="dash-stat">
+                <span class="dash-stat-number" data-count="${s.count}">0</span>${s.suffix ? `<span class="dash-stat-suffix">${s.suffix}</span>` : ''}
+                <span class="dash-stat-label">${s.label}</span>
+            </div>
+        `).join('');
+    }
+
+    // Section Cards
+    const dashCards = document.getElementById('dashCards');
+    if (dashCards) {
+        dashCards.innerHTML = Object.entries(data.sections).map(([key, section]) => {
+            const icon = SECTION_ICONS[key] || '';
+            const accentVar = SECTION_ACCENT_VARS[key] || '--color-primary';
+            const card = section.card || {};
+            const tags = (card.tags || []).map(t => `<span>${t}</span>`).join('');
+            return `
+                <div class="dash-card" data-goto="${key}">
+                    <div class="dash-card-accent" style="--card-accent: var(${accentVar})"></div>
+                    <div class="dash-card-icon" style="--card-accent: var(${accentVar})">${icon}</div>
+                    <h3>${section.title}</h3>
+                    <p>${card.description || ''}</p>
+                    <div class="dash-card-tags">${tags}</div>
+                    <div class="dash-card-arrow">→</div>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function populateAboutModal(profile) {
+    const aboutName = document.getElementById('aboutName');
+    const aboutHeadline = document.getElementById('aboutHeadline');
+    const body = document.getElementById('aboutModalBody');
+    if (aboutName) aboutName.textContent = profile.name;
+    if (aboutHeadline) aboutHeadline.textContent = `${profile.title} @ ${profile.company}`;
+    if (body) {
+        body.innerHTML = `
+            <div class="about-info-grid">
+                <div class="about-info-item"><span class="about-info-label">📍 Location</span><span>${profile.location}</span></div>
+                <div class="about-info-item"><span class="about-info-label">🌍 Nationality</span><span>${profile.nationality}</span></div>
+                <div class="about-info-item"><span class="about-info-label">🎂 Date of Birth</span><span>${profile.dob}</span></div>
+                <div class="about-info-item"><span class="about-info-label">🗣️ Languages</span><span>${profile.languages}</span></div>
+            </div>
+            <h3>Profile</h3>
+            <p>${profile.bio}</p>
+        `;
+    }
+}
+
+function populateContactModal(contact) {
+    const body = document.getElementById('contactModalBody');
+    if (!body) return;
+    body.innerHTML = `
+        <div class="contact-cards">
+            <a href="tel:${contact.phone}" class="contact-card phone-card">
+                <div class="contact-card-icon"><svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" stroke-width="2"/></svg></div>
+                <div><div class="contact-card-label">Phone</div><div class="contact-card-value">${contact.phoneDisplay}</div></div>
+                <div class="contact-card-arrow">→</div>
+            </a>
+            <a href="mailto:${contact.email}" class="contact-card email-card">
+                <div class="contact-card-icon"><svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="2"/></svg></div>
+                <div><div class="contact-card-label">Email</div><div class="contact-card-value">${contact.email}</div></div>
+                <div class="contact-card-arrow">→</div>
+            </a>
+            <a href="${contact.linkedin}" target="_blank" class="contact-card linkedin-card">
+                <div class="contact-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></div>
+                <div><div class="contact-card-label">LinkedIn</div><div class="contact-card-value">${contact.linkedinDisplay}</div></div>
+                <div class="contact-card-arrow">→</div>
+            </a>
+        </div>
+    `;
+}
 
 // ==============================
 // State
@@ -162,7 +146,7 @@ let startY = 0;
 let activeNode = null;
 let isDraggingNode = false;
 let selectedNodeEl = null;
-let ghostDemoDone = {}; // track which sections have already shown the demo
+let ghostDemoDone = {};
 
 // ==============================
 // Global Modal Helpers
@@ -171,7 +155,6 @@ function openModal(id) {
     const el = document.getElementById(id);
     if (el) {
         el.style.display = 'flex';
-        // Force reflow then add active class for smooth transition
         el.offsetHeight;
         el.classList.add('active');
     }
@@ -188,7 +171,19 @@ function closeModal(id) {
 // ==============================
 // Main
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load data from JSON
+    const loadedData = await loadPortfolioData();
+    if (!loadedData) {
+        console.error('Portfolio data failed to load');
+        return;
+    }
+
+    // Populate dynamic content
+    populateDashboard(loadedData);
+    populateAboutModal(loadedData.profile);
+    populateContactModal(loadedData.contact);
+
     const canvas = document.getElementById('canvas');
     const interactiveLayer = document.getElementById('interactiveLayer');
     const canvasBackground = document.getElementById('canvasBackground');
@@ -207,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroCta = document.getElementById('heroCta');
     const minimapCanvas = document.getElementById('minimapCanvas');
     const minimapViewport = document.getElementById('minimapViewport');
-
     const dashboardEl = document.getElementById('dashboard');
 
     // Modal buttons
@@ -225,22 +219,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pageTitle) pageTitle.textContent = 'Dashboard';
         history.replaceState(null, '', '#dashboard');
         animateStatCounters();
-        // Force-play hero video (browsers block autoplay inside display:none)
-        if (heroVideoEl) {
-            heroVideoEl.play().catch(() => {});
-        }
+        if (heroVideoEl) heroVideoEl.play().catch(() => {});
     }
 
     function hideDashboard() {
         dashboardEl.classList.remove('active');
         canvas.style.display = '';
-        // Pause video when not visible
         if (heroVideoEl) heroVideoEl.pause();
     }
 
     function navigateToSection(sectionKey) {
         if (sectionKey === 'dashboard') {
-            hideDashboard(); // reset first
+            hideDashboard();
             navItems.forEach(n => n.classList.remove('active'));
             const navTarget = document.querySelector('.nav-item[data-section="dashboard"]');
             if (navTarget) navTarget.classList.add('active');
@@ -253,11 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navTarget) navTarget.classList.add('active');
         renderSection(sectionKey);
         if (typeof featureFlags === 'undefined' || featureFlags.particles) startParticles();
-        // Trigger ghost demo cursor
         setTimeout(() => { fitToScreen(); if (typeof featureFlags === 'undefined' || featureFlags.ghostCursor) runGhostDemo(sectionKey); }, 60);
     }
 
-    // Stat counter animation
     function animateStatCounters() {
         document.querySelectorAll('.dash-stat-number[data-count]').forEach(el => {
             const target = parseInt(el.getAttribute('data-count'));
@@ -275,16 +263,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Dashboard card clicks (data-goto)
-    document.querySelectorAll('[data-goto]').forEach(el => {
-        el.addEventListener('click', () => {
-            const target = el.getAttribute('data-goto');
+    // Use event delegation for data-goto (handles dynamically created cards)
+    document.addEventListener('click', (e) => {
+        const gotoEl = e.target.closest('[data-goto]');
+        if (gotoEl) {
+            const target = gotoEl.getAttribute('data-goto');
             if (target && cvData[target]) navigateToSection(target);
-        });
+        }
     });
 
     // ---- Hero Intro ----
-    // Check feature flag from localStorage early (before featureFlags object is created)
     const _heroFlagRaw = localStorage.getItem('portfolioFeatures');
     const _heroEnabled = _heroFlagRaw ? (JSON.parse(_heroFlagRaw).heroIntro !== false) : true;
     if (!_heroEnabled || sessionStorage.getItem('heroShown')) {
@@ -296,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { heroOverlay.style.display = 'none'; }, 800);
         }
         heroCta.addEventListener('click', dismissHero);
-        // Also allow clicking the overlay background after 2.5s
         setTimeout(() => heroOverlay.addEventListener('click', (e) => { if (e.target === heroOverlay) dismissHero(); }), 2500);
     }
 
@@ -345,11 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         let aw = rect.width;
 
-        // Account for the panel width change during animation
         if (isClosingPanel && detailPanel.classList.contains('open')) aw += 400;
         if (isPanelOpening && !isClosingPanel) aw -= 400;
-
-        // Safety: ensure available width is at least 200px
         aw = Math.max(200, aw);
 
         scale = Math.min(Math.max(0.2, Math.min(aw / cw, rect.height / ch)), 1.2);
@@ -363,28 +347,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         const aw = panelAlreadyOpen ? rect.width : Math.max(200, rect.width - 400);
         const ah = rect.height;
-
         const targetScale = 1.0;
         const nodeCenterX = node.x + nodeW / 2;
         const nodeCenterY = node.y + nodeH / 2;
         const targetTX = (aw / 2) - (nodeCenterX * targetScale);
         const targetTY = (ah / 2) - (nodeCenterY * targetScale);
-
-        // Animate via JS so particles stay perfectly in sync with connections
-        const startTX = translateX, startTY = translateY, startScale = scale;
+        const startTX = translateX, startTY = translateY, startScale2 = scale;
         const duration = 400;
         const startTime = performance.now();
-
         function animate(now) {
             const elapsed = now - startTime;
             const t = Math.min(elapsed / duration, 1);
-            const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
-
+            const ease = 1 - Math.pow(1 - t, 3);
             translateX = startTX + (targetTX - startTX) * ease;
             translateY = startTY + (targetTY - startTY) * ease;
-            scale = startScale + (targetScale - startScale) * ease;
+            scale = startScale2 + (targetScale - startScale2) * ease;
             updateTransform();
-
             if (t < 1) requestAnimationFrame(animate);
         }
         requestAnimationFrame(animate);
@@ -405,7 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
     zoomOutBtn.addEventListener('click', () => applyZoom(0.8));
     zoomResetBtn.addEventListener('click', () => fitToScreen());
 
-    // Mouse wheel zoom
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
         let ns = Math.min(Math.max(0.2, scale * (1 + e.deltaY * -0.001)), 3);
@@ -419,7 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Touch Support ----
     let lastTouchDist = 0;
-
     canvas.addEventListener('touchstart', (e) => {
         if (e.target.closest('.node-module,.zoom-controls,.minimap')) return;
         if (e.touches.length === 2) {
@@ -437,10 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
             let ns = Math.min(Math.max(0.2, scale * (dist / lastTouchDist)), 3);
             const r = canvas.getBoundingClientRect();
-            const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
-            const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
-            translateX = cx - (cx - translateX) * (ns / scale);
-            translateY = cy - (cy - translateY) * (ns / scale);
+            const cx2 = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
+            const cy2 = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+            translateX = cx2 - (cx2 - translateX) * (ns / scale);
+            translateY = cy2 - (cy2 - translateY) * (ns / scale);
             scale = ns;
             lastTouchDist = dist;
             updateTransform();
@@ -455,8 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Mouse Panning ----
     canvas.addEventListener('mousedown', (e) => {
-        cancelGhostDemo(); // Cancel demo if user interacts
-        if (e.target.closest('.node-module,.detail-panel,.sidebar,.topbar,.minimap')) return;
+        cancelGhostDemo();
+        if (e.target.closest('.node-module,.detail-panel,.sidebar,.topbar,.minimap,.editor-add-node-btn')) return;
         isPanning = true;
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
@@ -474,13 +450,16 @@ document.addEventListener('DOMContentLoaded', () => {
             activeNode.data.y = (e.clientY - startY) / scale;
             activeNode.element.style.left = `${activeNode.data.x}px`;
             activeNode.element.style.top = `${activeNode.data.y}px`;
-            // Update paths in-place (no destroy/recreate) so particles stay synced
             updateConnectionPaths(cvData[currentSection].nodes, cvData[currentSection].connections);
             updateMinimap();
         }
     });
 
     window.addEventListener('mouseup', () => {
+        if (isDraggingNode) {
+            // Dispatch event for editor.js to track position changes
+            window.dispatchEvent(new CustomEvent('nodeDragEnd'));
+        }
         isPanning = false;
         isDraggingNode = false;
         activeNode = null;
@@ -536,20 +515,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // Click
             el.addEventListener('click', () => {
                 if (isDraggingNode) return;
+
+                // If edit mode is on, delegate to editor
+                if (window.portfolio && window.portfolio.editMode && window.portfolio.onNodeEdit) {
+                    window.portfolio.onNodeEdit(node, sectionKey);
+                    return;
+                }
+
                 if (selectedNodeEl) selectedNodeEl.classList.remove('selected');
                 el.classList.add('selected');
                 selectedNodeEl = el;
                 panelContent.innerHTML = node.details;
                 detailPanel.classList.add('open');
                 highlightConnections(node.id);
-                // Center on node after panel animation completes (single smooth move)
                 setTimeout(() => {
                     resizeParticleCanvas();
                     centerOnNode(node, true);
                 }, 320);
             });
 
-            // Keyboard
             el.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
             });
@@ -584,7 +568,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Update existing path positions without destroying/recreating (used during drag)
     function updateConnectionPaths(nodes, connections) {
         const paths = svgLayer.querySelectorAll('.connection-path');
         connections.forEach((conn, i) => {
@@ -615,80 +598,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function runGhostDemo(sectionKey) {
         cancelGhostDemo();
-
         const data = cvData[sectionKey];
         if (!data || !data.nodes.length) return;
-
-        // Pick the first node as the demo target
         const targetNode = data.nodes[0];
         const targetEl = document.getElementById(`node-${targetNode.id}`);
         if (!targetEl) return;
 
-        // Wait for fitToScreen + node enter animations to finish
         ghostAnimCancelId = setTimeout(() => {
             const nodeRect = targetEl.getBoundingClientRect();
             const nodeCX = nodeRect.left + nodeRect.width / 2;
             const nodeCY = nodeRect.top + nodeRect.height / 2;
-
-            // Start cursor from top-right area of canvas
             const canvasRect = canvas.getBoundingClientRect();
             const startCX = canvasRect.left + canvasRect.width * 0.75;
             const startCY = canvasRect.top + 80;
 
-            // Position cursor at start
             ghostCursor.style.left = `${startCX}px`;
             ghostCursor.style.top = `${startCY}px`;
             ghostCursor.classList.add('visible');
 
-            // Phase 1: Animate cursor to the node (smooth glide)
             const moveDuration = 1200;
             const moveStart = performance.now();
 
             function animateMove(now) {
                 const elapsed = now - moveStart;
                 const t = Math.min(elapsed / moveDuration, 1);
-                // Smooth ease-in-out
                 const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-                // Re-read target position in case of layout shifts
                 const nr = targetEl.getBoundingClientRect();
                 const curTargetX = nr.left + nr.width / 2;
                 const curTargetY = nr.top + nr.height / 2;
-
-                const cx = startCX + (curTargetX - startCX) * ease;
-                const cy = startCY + (curTargetY - startCY) * ease;
-                ghostCursor.style.left = `${cx}px`;
-                ghostCursor.style.top = `${cy}px`;
+                ghostCursor.style.left = `${startCX + (curTargetX - startCX) * ease}px`;
+                ghostCursor.style.top = `${startCY + (curTargetY - startCY) * ease}px`;
 
                 if (t < 1) {
                     ghostAnimCancelId = requestAnimationFrame(animateMove);
                 } else {
-                    // Phase 2: Show hover ring
                     ghostRing.style.left = `${curTargetX}px`;
                     ghostRing.style.top = `${curTargetY}px`;
                     ghostRing.classList.add('visible');
-
-                    // Phase 3: Click after a pause
                     ghostAnimCancelId = setTimeout(() => {
-                        // Click animation
                         ghostCursor.classList.add('clicking');
                         ghostRing.classList.remove('visible');
                         ghostRing.classList.add('click-burst');
-
-                        // Trigger the actual node click
                         targetEl.click();
-
-                        // Phase 4: Fade out cursor
                         ghostAnimCancelId = setTimeout(() => {
-                            ghostCursor.classList.remove('clicking');
-                            ghostCursor.classList.remove('visible');
+                            ghostCursor.classList.remove('clicking', 'visible');
                             ghostRing.classList.remove('click-burst');
                         }, 600);
                     }, 500);
                 }
             }
             requestAnimationFrame(animateMove);
-        }, 1200); // Delay to let fitToScreen + node animations complete
+        }, 1200);
     }
 
     // ---- Particle Animation ----
@@ -706,7 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     resizeParticleCanvas();
     window.addEventListener('resize', resizeParticleCanvas);
-    // Also resize when panel transitions end
     detailPanel.addEventListener('transitionend', resizeParticleCanvas);
 
     class Particle {
@@ -771,7 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.clearRect(0, 0, 160, 100);
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
-        // Connections
         ctx.strokeStyle = isDark ? 'rgba(139,92,246,0.3)' : 'rgba(82,0,255,0.2)';
         ctx.lineWidth = 1;
         data.connections.forEach(c => {
@@ -785,7 +743,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Nodes
         const colors = { skills: '#7C3AED', experience: '#2563EB', projects: '#059669', education: '#D97706', recommendations: '#DB2777' };
         const nc = colors[currentSection] || '#5200FF';
         data.nodes.forEach(n => {
@@ -795,7 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.beginPath(); ctx.arc(nx, ny, 6, 0, Math.PI * 2); ctx.fillStyle = nc + '33'; ctx.fill();
         });
 
-        // Viewport
         const cr = canvas.getBoundingClientRect();
         const vl = (-translateX / scale - minX) / rx * 160;
         const vt = (-translateY / scale - minY) / ry * 100;
@@ -815,19 +771,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Close panel
     closePanelBtn.addEventListener('click', () => {
         const wasOpen = detailPanel.classList.contains('open');
         detailPanel.classList.remove('open');
         if (selectedNodeEl) { selectedNodeEl.classList.remove('selected'); selectedNodeEl = null; }
         svgLayer.querySelectorAll('.connection-path.glow').forEach(p => p.classList.remove('glow'));
-        // After panel closes, re-fit and resize particles
         if (wasOpen) {
             fitToScreen(true);
-            setTimeout(() => {
-                resizeParticleCanvas();
-                fitToScreen();
-            }, 320);
+            setTimeout(() => { resizeParticleCanvas(); fitToScreen(); }, 320);
         }
     });
 
@@ -865,13 +816,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==============================
     // Settings Panel Logic
     // ==============================
-    // Read from config.js (loaded before this script)
     const SETTINGS_PASSWORD_ENABLED = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_PASSWORD_ENABLED !== undefined)
-        ? CONFIG.SETTINGS_PASSWORD_ENABLED
-        : true;
+        ? CONFIG.SETTINGS_PASSWORD_ENABLED : true;
     const SETTINGS_USER = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_USERNAME) || 'sahfas';
     const SETTINGS_PASS = (typeof CONFIG !== 'undefined' && CONFIG.SETTINGS_PASSWORD) || 'admin123';
-    // If password is disabled, auto-auth
     let settingsAuthed = !SETTINGS_PASSWORD_ENABLED;
 
     const settingsBtn = document.getElementById('settingsBtn');
@@ -884,13 +832,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsLogoutBtn = document.getElementById('settingsLogoutBtn');
     const settingsSubtitle = document.getElementById('settingsSubtitle');
 
-    // Toggle elements
     const toggleGhostCursor = document.getElementById('toggleGhostCursor');
     const toggleHeroIntro = document.getElementById('toggleHeroIntro');
     const toggleParticles = document.getElementById('toggleParticles');
     const toggleTooltips = document.getElementById('toggleTooltips');
 
-    // Feature flags (defaults: all ON)
     const featureDefaults = { ghostCursor: true, heroIntro: true, particles: true, tooltips: true };
 
     function loadFeatureFlags() {
@@ -908,42 +854,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let featureFlags = loadFeatureFlags();
 
-    // Apply feature flags to UI state
     function applyFeatureFlags() {
-        // Ghost Cursor
         toggleGhostCursor.checked = featureFlags.ghostCursor;
-        // Hero Intro
         toggleHeroIntro.checked = featureFlags.heroIntro;
-        // Particles
         toggleParticles.checked = featureFlags.particles;
-        // Tooltips
         toggleTooltips.checked = featureFlags.tooltips;
-
-        // Apply tooltips immediately
-        if (!featureFlags.tooltips) {
-            document.body.classList.add('tooltips-disabled');
-        } else {
-            document.body.classList.remove('tooltips-disabled');
-        }
-
-        // Apply particles immediately
+        if (!featureFlags.tooltips) document.body.classList.add('tooltips-disabled');
+        else document.body.classList.remove('tooltips-disabled');
         if (!featureFlags.particles && animFrameId) {
-            cancelAnimationFrame(animFrameId);
-            animFrameId = null;
+            cancelAnimationFrame(animFrameId); animFrameId = null;
             pCtx.clearRect(0, 0, particleCanvasEl.width, particleCanvasEl.height);
             particles = [];
         }
-
-        // Apply hero intro: if disabled, never show it
-        if (!featureFlags.heroIntro) {
-            heroOverlay.style.display = 'none';
-        }
+        if (!featureFlags.heroIntro) heroOverlay.style.display = 'none';
     }
 
-    // Open settings modal
     settingsBtn.addEventListener('click', () => {
         if (!settingsAuthed && SETTINGS_PASSWORD_ENABLED) {
-            // Show login view
             settingsLoginEl.style.display = '';
             settingsPanelEl.style.display = 'none';
             settingsSubtitle.textContent = 'Admin access required';
@@ -951,23 +878,16 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsUserInput.value = '';
             settingsPassInput.value = '';
         } else {
-            // Skip login — go straight to toggles
             settingsLoginEl.style.display = 'none';
             settingsPanelEl.style.display = '';
             settingsSubtitle.textContent = 'Manage portfolio features';
-            // Hide logout button when password is disabled (no login = no logout)
-            if (!SETTINGS_PASSWORD_ENABLED) {
-                settingsLogoutBtn.parentElement.style.display = 'none';
-            }
+            if (!SETTINGS_PASSWORD_ENABLED) settingsLogoutBtn.parentElement.style.display = 'none';
             applyFeatureFlags();
         }
         openModal('settingsModal');
-        if (!settingsAuthed && SETTINGS_PASSWORD_ENABLED) {
-            setTimeout(() => settingsUserInput.focus(), 300);
-        }
+        if (!settingsAuthed && SETTINGS_PASSWORD_ENABLED) setTimeout(() => settingsUserInput.focus(), 300);
     });
 
-    // Login handler
     function handleSettingsLogin() {
         const user = settingsUserInput.value.trim();
         const pass = settingsPassInput.value;
@@ -986,14 +906,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     settingsLoginBtn.addEventListener('click', handleSettingsLogin);
-    settingsPassInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') handleSettingsLogin();
-    });
-    settingsUserInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') settingsPassInput.focus();
-    });
+    settingsPassInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSettingsLogin(); });
+    settingsUserInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') settingsPassInput.focus(); });
 
-    // Logout handler
     settingsLogoutBtn.addEventListener('click', () => {
         settingsAuthed = false;
         settingsLoginEl.style.display = '';
@@ -1005,66 +920,63 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => settingsUserInput.focus(), 100);
     });
 
-    // Toggle change handlers
     toggleGhostCursor.addEventListener('change', () => {
         featureFlags.ghostCursor = toggleGhostCursor.checked;
         saveFeatureFlags(featureFlags);
-        if (!featureFlags.ghostCursor) {
-            cancelGhostDemo();
-        }
+        if (!featureFlags.ghostCursor) cancelGhostDemo();
     });
 
     toggleHeroIntro.addEventListener('change', () => {
         featureFlags.heroIntro = toggleHeroIntro.checked;
         saveFeatureFlags(featureFlags);
-        if (!featureFlags.heroIntro) {
-            // Immediately hide hero if it's currently showing
-            heroOverlay.style.display = 'none';
-            // Also clear the session flag so toggling back ON will re-show it next visit
-            sessionStorage.removeItem('heroShown');
-        } else {
-            // Clear the session flag so it shows again on next page load
-            sessionStorage.removeItem('heroShown');
-        }
+        if (!featureFlags.heroIntro) { heroOverlay.style.display = 'none'; sessionStorage.removeItem('heroShown'); }
+        else sessionStorage.removeItem('heroShown');
     });
 
     toggleParticles.addEventListener('change', () => {
         featureFlags.particles = toggleParticles.checked;
         saveFeatureFlags(featureFlags);
         if (!featureFlags.particles) {
-            if (animFrameId) {
-                cancelAnimationFrame(animFrameId);
-                animFrameId = null;
-            }
+            if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             pCtx.clearRect(0, 0, particleCanvasEl.width, particleCanvasEl.height);
             particles = [];
         } else {
-            // Re-enable particles for current section
-            if (currentSection !== 'dashboard') {
-                startParticles();
-            }
+            if (currentSection !== 'dashboard') startParticles();
         }
     });
 
     toggleTooltips.addEventListener('change', () => {
         featureFlags.tooltips = toggleTooltips.checked;
         saveFeatureFlags(featureFlags);
-        if (!featureFlags.tooltips) {
-            document.body.classList.add('tooltips-disabled');
-        } else {
-            document.body.classList.remove('tooltips-disabled');
-        }
+        if (!featureFlags.tooltips) document.body.classList.add('tooltips-disabled');
+        else document.body.classList.remove('tooltips-disabled');
     });
 
-    // Apply initial feature flags on page load
     applyFeatureFlags();
+
+    // ==============================
+    // Expose Portfolio API for Editor
+    // ==============================
+    window.portfolio = {
+        editMode: false,
+        onNodeEdit: null,
+        getData: () => portfolioData,
+        getCurrentSection: () => currentSection,
+        getFeatureFlags: () => featureFlags,
+        renderSection,
+        fitToScreen,
+        startParticles,
+        navigateToSection,
+        drawConnections,
+        populateDashboard,
+        populateAboutModal,
+        populateContactModal,
+    };
 
     // ---- Initial Render ----
     const hash = location.hash.replace('#', '');
     if (hash && cvData[hash]) {
         navigateToSection(hash);
-    } else if (hash === 'dashboard' || !hash) {
-        showDashboard();
     } else {
         showDashboard();
     }
