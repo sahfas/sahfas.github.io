@@ -124,6 +124,34 @@
     cursor: not-allowed;
 }
 
+/* Sync Button */
+.editor-sync-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #5200FF, #7C3AED);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.editor-sync-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--color-primary-glow);
+}
+
+.editor-sync-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Add Node Button */
 .editor-add-node-btn {
     position: absolute;

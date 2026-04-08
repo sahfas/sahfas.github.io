@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
     const zoomResetBtn = document.getElementById('zoomResetBtn');
+    const autoAlignBtn = document.getElementById('autoAlignBtn');
     const themeToggle = document.getElementById('themeToggle');
     const heroOverlay = document.getElementById('heroOverlay');
     const heroCta = document.getElementById('heroCta');
@@ -344,6 +345,266 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateTransform();
     }
 
+    // ---- Auto-Align (multi-pattern) ----
+    const ALIGN_LAYOUTS = ['Tree', 'Radial', 'Circular', 'Grid'];
+    let alignLayoutIdx = 0;
+
+    function showAlignLabel(name) {
+        let label = document.getElementById('alignLabel');
+        if (!label) {
+            label = document.createElement('div');
+            label.id = 'alignLabel';
+            label.style.cssText = 'position:absolute;bottom:68px;right:24px;background:var(--color-panel-bg);border:1px solid var(--color-topbar-border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--color-primary);box-shadow:0 4px 12px rgba(0,0,0,0.12);z-index:16;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;font-family:var(--font-family);transform:translateY(4px);';
+            canvas.appendChild(label);
+        }
+        label.textContent = '\u2B21 ' + name;
+        label.style.opacity = '1';
+        label.style.transform = 'translateY(0)';
+        clearTimeout(label._hideTimer);
+        label._hideTimer = setTimeout(() => { label.style.opacity = '0'; label.style.transform = 'translateY(4px)'; }, 1800);
+    }
+
+    function autoAlignNodes() {
+        const data = cvData[currentSection];
+        if (!data || !data.nodes.length) return;
+
+        const layoutName = ALIGN_LAYOUTS[alignLayoutIdx];
+        alignLayoutIdx = (alignLayoutIdx + 1) % ALIGN_LAYOUTS.length;
+        showAlignLabel(layoutName);
+
+        const nodes = data.nodes;
+        const connections = data.connections;
+
+        // Build adjacency
+        const childrenOf = {}, parentsOf = {};
+        nodes.forEach(n => { childrenOf[n.id] = []; parentsOf[n.id] = []; });
+        connections.forEach(c => {
+            if (childrenOf[c.start]) childrenOf[c.start].push(c.end);
+            if (parentsOf[c.end]) parentsOf[c.end].push(c.start);
+        });
+
+        // Find roots
+        let roots = nodes.filter(n => n.type === 'trigger' || parentsOf[n.id].length === 0);
+        if (roots.length === 0) roots = [nodes[0]];
+
+        // BFS: layer assignment + traversal order
+        const depthMap = {};
+        const bfsOrder = [];
+        const visited = new Set();
+        const queue = [];
+        roots.forEach(r => { queue.push(r.id); visited.add(r.id); depthMap[r.id] = 0; });
+        while (queue.length > 0) {
+            const id = queue.shift();
+            bfsOrder.push(id);
+            childrenOf[id].forEach(childId => {
+                if (!visited.has(childId)) {
+                    visited.add(childId);
+                    depthMap[childId] = (depthMap[id] || 0) + 1;
+                    queue.push(childId);
+                } else {
+                    depthMap[childId] = Math.max(depthMap[childId] || 0, (depthMap[id] || 0) + 1);
+                }
+            });
+        }
+        nodes.forEach(n => { if (!(n.id in depthMap)) { depthMap[n.id] = 0; bfsOrder.push(n.id); } });
+
+        // Group by layer
+        const layers = {};
+        nodes.forEach(n => {
+            const d = depthMap[n.id];
+            if (!layers[d]) layers[d] = [];
+            layers[d].push(n);
+        });
+        const layerKeys = Object.keys(layers).map(Number).sort((a, b) => a - b);
+        const maxDepth = layerKeys.length > 0 ? layerKeys[layerKeys.length - 1] : 0;
+
+        const targets = {};
+        const cx = 400, cy = 300;
+
+        // ===== LAYOUT: Tree (hierarchical L-to-R) =====
+        if (layoutName === 'Tree') {
+            const hSp = 280, vSp = 150;
+
+            // Cross-minimization: barycenter heuristic
+            if (layerKeys.length > 0) layers[layerKeys[0]].sort((a, b) => a.y - b.y);
+            for (let i = 1; i < layerKeys.length; i++) {
+                const prev = layers[layerKeys[i - 1]];
+                const prevOrd = {};
+                prev.forEach((n, idx) => prevOrd[n.id] = idx);
+                layers[layerKeys[i]].forEach(n => {
+                    const pi = parentsOf[n.id].filter(p => p in prevOrd).map(p => prevOrd[p]);
+                    n._bary = pi.length > 0 ? pi.reduce((a, b) => a + b, 0) / pi.length : Infinity;
+                });
+                layers[layerKeys[i]].sort((a, b) => a._bary - b._bary);
+            }
+
+            // Pass 1: even vertical distribution per layer
+            layerKeys.forEach(layer => {
+                const ln = layers[layer];
+                const totalH = (ln.length - 1) * vSp;
+                ln.forEach((node, idx) => {
+                    targets[node.id] = { x: 100 + layer * hSp, y: cy - totalH / 2 + idx * vSp };
+                });
+            });
+            // Pass 2: pull parents toward children center
+            for (let i = layerKeys.length - 2; i >= 0; i--) {
+                const ln = layers[layerKeys[i]];
+                ln.forEach(n => {
+                    const kids = childrenOf[n.id].filter(id => id in targets);
+                    if (kids.length > 0) targets[n.id].y = kids.reduce((s, k) => s + targets[k].y, 0) / kids.length;
+                });
+                ln.sort((a, b) => targets[a.id].y - targets[b.id].y);
+                for (let j = 1; j < ln.length; j++) {
+                    if (targets[ln[j].id].y - targets[ln[j-1].id].y < vSp) targets[ln[j].id].y = targets[ln[j-1].id].y + vSp;
+                }
+            }
+            // Pass 3: blend children toward parents
+            for (let i = 1; i < layerKeys.length; i++) {
+                const ln = layers[layerKeys[i]];
+                ln.forEach(n => {
+                    const pars = parentsOf[n.id].filter(id => id in targets);
+                    if (pars.length > 0) {
+                        const avgPY = pars.reduce((s, p) => s + targets[p].y, 0) / pars.length;
+                        targets[n.id].y = targets[n.id].y * 0.35 + avgPY * 0.65;
+                    }
+                });
+                ln.sort((a, b) => targets[a.id].y - targets[b.id].y);
+                for (let j = 1; j < ln.length; j++) {
+                    if (targets[ln[j].id].y - targets[ln[j-1].id].y < vSp) targets[ln[j].id].y = targets[ln[j-1].id].y + vSp;
+                }
+            }
+        }
+
+        // ===== LAYOUT: Radial (concentric rings from root) =====
+        else if (layoutName === 'Radial') {
+            const ringGap = 180;
+
+            // Roots at center
+            if (roots.length === 1) {
+                targets[roots[0].id] = { x: cx, y: cy };
+            } else {
+                roots.forEach((r, i) => {
+                    const a = (i / roots.length) * Math.PI * 2 - Math.PI / 2;
+                    targets[r.id] = { x: cx + Math.cos(a) * 50, y: cy + Math.sin(a) * 50 };
+                });
+            }
+
+            // Each depth level on a concentric ring
+            for (let d = 1; d <= maxDepth; d++) {
+                const ln = layers[d] || [];
+                if (ln.length === 0) continue;
+                const radius = d * ringGap;
+
+                // Calculate parent angles so children cluster near their parents
+                const parentAngles = {};
+                ln.forEach(n => {
+                    const pars = parentsOf[n.id].filter(p => p in targets);
+                    if (pars.length > 0) {
+                        const avgX = pars.reduce((s, p) => s + targets[p].x, 0) / pars.length;
+                        const avgY = pars.reduce((s, p) => s + targets[p].y, 0) / pars.length;
+                        parentAngles[n.id] = Math.atan2(avgY - cy, avgX - cx);
+                    } else {
+                        parentAngles[n.id] = 0;
+                    }
+                });
+
+                // Sort by parent angle, then distribute evenly
+                ln.sort((a, b) => parentAngles[a.id] - parentAngles[b.id]);
+                const angleStep = (Math.PI * 2) / Math.max(ln.length, 1);
+                const baseAngle = ln.length <= 2 ? -Math.PI / 2 : parentAngles[ln[0].id] - (ln.length - 1) * angleStep / 2;
+                ln.forEach((node, idx) => {
+                    const angle = baseAngle + idx * angleStep;
+                    targets[node.id] = {
+                        x: cx + Math.cos(angle) * radius,
+                        y: cy + Math.sin(angle) * radius
+                    };
+                });
+            }
+
+            // Place any orphans at center
+            nodes.forEach(n => { if (!(n.id in targets)) targets[n.id] = { x: cx, y: cy }; });
+        }
+
+        // ===== LAYOUT: Circular (single ring, BFS order) =====
+        else if (layoutName === 'Circular') {
+            const radius = Math.max(150, nodes.length * 35);
+            bfsOrder.forEach((id, idx) => {
+                const angle = (idx / bfsOrder.length) * Math.PI * 2 - Math.PI / 2;
+                targets[id] = {
+                    x: cx + Math.cos(angle) * radius,
+                    y: cy + Math.sin(angle) * radius
+                };
+            });
+        }
+
+        // ===== LAYOUT: Grid (rectangular, BFS order) =====
+        else if (layoutName === 'Grid') {
+            const cols = Math.ceil(Math.sqrt(nodes.length));
+            const spacing = 190;
+            const gridW = (cols - 1) * spacing;
+            const numRows = Math.ceil(nodes.length / cols);
+            const gridH = (numRows - 1) * spacing;
+            bfsOrder.forEach((id, idx) => {
+                const col = idx % cols;
+                const row = Math.floor(idx / cols);
+                targets[id] = {
+                    x: cx - gridW / 2 + col * spacing,
+                    y: cy - gridH / 2 + row * spacing
+                };
+            });
+        }
+
+        // Re-center the whole layout
+        let gMinX = Infinity, gMaxX = -Infinity, gMinY = Infinity, gMaxY = -Infinity;
+        nodes.forEach(n => {
+            const t = targets[n.id]; if (!t) return;
+            gMinX = Math.min(gMinX, t.x); gMaxX = Math.max(gMaxX, t.x);
+            gMinY = Math.min(gMinY, t.y); gMaxY = Math.max(gMaxY, t.y);
+        });
+        const offX = cx - (gMinX + gMaxX) / 2;
+        const offY = cy - (gMinY + gMaxY) / 2;
+        nodes.forEach(n => { if (targets[n.id]) { targets[n.id].x += offX; targets[n.id].y += offY; } });
+
+        // --- Smooth animation ---
+        const duration = 600;
+        const startTime = performance.now();
+        const startPos = {};
+        nodes.forEach(n => { startPos[n.id] = { x: n.x, y: n.y }; });
+
+        function animateAlign(now) {
+            const elapsed = now - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - t, 3.5);
+
+            nodes.forEach(n => {
+                const s = startPos[n.id];
+                const tgt = targets[n.id];
+                if (!tgt) return;
+                n.x = s.x + (tgt.x - s.x) * ease;
+                n.y = s.y + (tgt.y - s.y) * ease;
+                const el = document.getElementById('node-' + n.id);
+                if (el) {
+                    el.style.left = n.x + 'px';
+                    el.style.top = n.y + 'px';
+                }
+            });
+
+            updateConnectionPaths(nodes, connections);
+            updateMinimap();
+
+            if (t < 1) {
+                requestAnimationFrame(animateAlign);
+            } else {
+                fitToScreen();
+                window.dispatchEvent(new CustomEvent('nodeDragEnd'));
+            }
+        }
+
+        requestAnimationFrame(animateAlign);
+    }
+
+
+
     function centerOnNode(node, panelAlreadyOpen) {
         const nodeW = 64, nodeH = 64;
         const rect = canvas.getBoundingClientRect();
@@ -384,6 +645,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     zoomInBtn.addEventListener('click', () => applyZoom(1.2));
     zoomOutBtn.addEventListener('click', () => applyZoom(0.8));
     zoomResetBtn.addEventListener('click', () => fitToScreen());
+    autoAlignBtn.addEventListener('click', () => autoAlignNodes());
 
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
@@ -591,15 +853,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ghostCursor = document.getElementById('ghostCursor');
     const ghostRing = document.getElementById('ghostCursorRing');
     let ghostAnimCancelId = null;
+    let ghostDemoCancelled = false;
 
     function cancelGhostDemo() {
-        if (ghostAnimCancelId) { clearTimeout(ghostAnimCancelId); ghostAnimCancelId = null; }
+        ghostDemoCancelled = true;
+        if (ghostAnimCancelId) {
+            clearTimeout(ghostAnimCancelId);
+            cancelAnimationFrame(ghostAnimCancelId);
+            ghostAnimCancelId = null;
+        }
         if (ghostCursor) { ghostCursor.classList.remove('visible', 'clicking'); }
         if (ghostRing) { ghostRing.classList.remove('visible', 'click-burst'); }
     }
 
     function runGhostDemo(sectionKey) {
         cancelGhostDemo();
+        ghostDemoCancelled = false;
         const data = cvData[sectionKey];
         if (!data || !data.nodes.length) return;
         const targetNode = data.nodes[0];
@@ -607,6 +876,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!targetEl) return;
 
         ghostAnimCancelId = setTimeout(() => {
+            if (ghostDemoCancelled) return;
             const nodeRect = targetEl.getBoundingClientRect();
             const nodeCX = nodeRect.left + nodeRect.width / 2;
             const nodeCY = nodeRect.top + nodeRect.height / 2;
@@ -622,6 +892,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const moveStart = performance.now();
 
             function animateMove(now) {
+                if (ghostDemoCancelled) return;
                 const elapsed = now - moveStart;
                 const t = Math.min(elapsed / moveDuration, 1);
                 const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -638,6 +909,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ghostRing.style.top = `${curTargetY}px`;
                     ghostRing.classList.add('visible');
                     ghostAnimCancelId = setTimeout(() => {
+                        if (ghostDemoCancelled) return;
                         ghostCursor.classList.add('clicking');
                         ghostRing.classList.remove('visible');
                         ghostRing.classList.add('click-burst');
@@ -973,6 +1245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         populateDashboard,
         populateAboutModal,
         populateContactModal,
+        autoAlignNodes,
     };
 
     // ---- Initial Render ----

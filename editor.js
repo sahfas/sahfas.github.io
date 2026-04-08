@@ -54,6 +54,10 @@
                 <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2"/></svg>
                 Save
             </button>
+            <button class="editor-sync-btn" id="editorSyncBtn">
+                <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Sync
+            </button>
         `;
         document.body.appendChild(toolbar);
 
@@ -70,6 +74,9 @@
         saveBtn = document.getElementById('editorSaveBtn');
         saveBtn.addEventListener('click', saveData);
         statusText = document.getElementById('editorStatus');
+
+        const syncBtn = document.getElementById('editorSyncBtn');
+        syncBtn.addEventListener('click', syncToGit);
 
         addNodeBtn.addEventListener('click', () => {
             const section = window.portfolio.getCurrentSection();
@@ -135,6 +142,43 @@
             saveBtn.disabled = false;
             setStatus('Save failed: ' + err.message, 'error');
         }
+    }
+
+    // ---- Git Sync ----
+    async function syncToGit() {
+        const syncBtn = document.getElementById('editorSyncBtn');
+        setStatus('Syncing to Git...', 'info');
+        syncBtn.disabled = true;
+
+        // If there are unsaved changes, save first
+        if (hasUnsavedChanges) {
+            try {
+                await saveData();
+            } catch (e) {
+                syncBtn.disabled = false;
+                setStatus('Save failed, sync aborted', 'error');
+                return;
+            }
+        }
+
+        try {
+            const response = await fetch('api/sync.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                const msg = result.committed ? 'Pushed to ' + result.branch + ' ✓' : 'Already up to date ✓';
+                setStatus(msg, 'success');
+                setTimeout(() => { if (!hasUnsavedChanges) setStatus('', ''); }, 4000);
+            } else {
+                setStatus('Sync error: ' + result.error, 'error');
+            }
+        } catch (err) {
+            setStatus('Sync failed: ' + err.message, 'error');
+        }
+        syncBtn.disabled = false;
     }
 
     // ---- Node Editor (Detail Panel) ----

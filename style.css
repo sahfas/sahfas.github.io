@@ -311,6 +311,22 @@ body {
     pointer-events: none;
 }
 
+/* Align Controls */
+.align-controls {
+    position: absolute;
+    bottom: 76px;
+    right: 24px;
+    background-color: var(--color-panel-bg);
+    border: 1px solid var(--color-topbar-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px var(--color-panel-shadow);
+    z-index: 15;
+    padding: 6px;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
 /* Zoom Controls */
 .zoom-controls {
     position: absolute;
@@ -1529,6 +1545,7 @@ body.tooltips-disabled .node-tooltip { display: none !important; }
     .contact-card-value { font-size: 14px; word-break: break-all; }
 
     .zoom-controls { bottom: 16px; right: 16px; transform: scale(0.9); transform-origin: bottom right; }
+    .align-controls { bottom: 68px; right: 16px; transform: scale(0.9); transform-origin: bottom right; }
     .minimap { display: none; }
     .hero-name { font-size: 32px; }
     .hero-subtitle { font-size: 15px; }
